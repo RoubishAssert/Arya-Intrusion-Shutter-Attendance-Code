@@ -1,0 +1,113 @@
+site_version: 1.0B
+
+##############################################################################################
+number_of_streams: 4
+streams_type: 1           #( 0:FILE / 1:RTSP                 #type of input for file type of input set '0' , for RTSP set '1') 
+No_of_Intrusion_Streams: 2
+No_of_Vehicle_Streams: 1
+Attendance_Stream_No: 4
+camera_id_dict : {0: '42_4', 1: '42_5', 2: '42_7', 3: '42_7'}
+
+
+############################################################################################################
+
+cameras:
+  ################
+  # Configuration RTSP Streams url for IP Cameras
+  # Custom links of RTSP, based on above count it will fetch cam details starting from cam 1
+  
+  cam1:
+    name: 'cam1'
+    inputs: "rtsp://admin:assert%40123@192.168.1.2:554/h265/main/ch4/main/av_stream"
+    MIN_CONFIDENCE: 0.4 
+    MAX_CONFIDENCE: 1.0
+    Shutter_Status_confirm: 25  # To Confirm shutter status
+    roi: {'xmin':0, 'ymin':0, 'xmax':1920, 'ymax':1920}
+    ################
+    # Configuration for frame size of the camera
+    ################
+
+  cam2:
+    name: 'cam2'
+    inputs: "rtsp://admin:assert%40123@192.168.1.2:554/h265/main/ch5/main/av_stream"
+    MIN_CONFIDENCE: 0.5  
+    MAX_CONFIDENCE: 1.0
+    Shutter_Status_confirm: 25  # To Confirm shutter status
+    links: 'video_feed_2'
+    roi: {'xmin':0, 'ymin':0, 'xmax':1920, 'ymax':1920}
+    ################
+    # Configuration for frame size of the camera
+    ################
+
+  cam3:
+    name: 'cam3'
+    inputs: "rtsp://admin:assert%40123@192.168.1.2:554/h265/main/ch7/main/av_stream"
+    MIN_CONFIDENCE: 0.5
+    MAX_CONFIDENCE: 1.0
+    Shutter_Status_confirm: 25  # To Confirm shutter status
+    links: 'video_feed_2'
+    roi: {'xmin':0, 'ymin':0, 'xmax':1920, 'ymax':1920}
+    ################
+    # Configuration for frame size of the camera
+    ################
+
+  cam4:
+    name: 'cam4'
+    inputs: "rtsp://admin:assert%40123@192.168.1.2:554/h265/main/ch7/main/av_stream"
+    MIN_CONFIDENCE: 0.5
+    MAX_CONFIDENCE: 1.0
+    Shutter_Status_confirm: 25  # To Confirm shutter status
+    links: 'video_feed_1'
+    roi: {'xmin':0, 'ymin':0, 'xmax':1920, 'ymax':1920}
+    ################
+    # Configuration for frame size of the camera
+    ################
+
+  cam5:
+    name: 'cam5'
+    inputs: "rtsp://172.17.0.1:8554/compose-cam1"
+    MIN_CONFIDENCE: 0.5
+    MAX_CONFIDENCE: 1.0
+    Shutter_Status_confirm: 25  # To Confirm shutter status
+    Alarm_detection_time: 1
+    links: 'video_feed_1'
+    roi: {'xmin':0, 'ymin':0, 'xmax':1920, 'ymax':1920}
+    ################
+    # Configuration for frame size of the camera
+    ################
+
+  cam6:
+    name: 'cam6'
+    inputs: "rtsp://172.17.0.1:8554/compose-cam1"
+    MIN_CONFIDENCE: 0.5
+    MAX_CONFIDENCE: 1.0
+    Shutter_Status_confirm: 25  # To Confirm shutter status
+    links: 'video_feed_1'
+    roi: {'xmin':100, 'ymin':500, 'xmax':1000, 'ymax':1800}
+    ################
+    # Configuration for frame size of the camera
+    ################
+
+  cam7:
+    name: 'cam7'
+    inputs: "rtsp://172.17.0.1:8554/compose-cam1"
+    MIN_CONFIDENCE: 0.5
+    MAX_CONFIDENCE: 1.0
+    Shutter_Status_confirm: 25  # To Confirm shutter status
+    links: 'video_feed_1'
+    roi: {'xmin':100, 'ymin':500, 'xmax':1000, 'ymax':1800}
+    ################
+    # Configuration for frame size of the camera
+    ################
+
+  cam8:
+    name: 'cam8'
+    inputs: "rtsp://172.17.0.1:8554/compose-cam1"
+    MIN_CONFIDENCE: 0.5
+    MAX_CONFIDENCE: 1.0
+    Shutter_Status_confirm: 25  #To Confirm shutter status
+    links: 'video_feed_1'
+    roi: {'xmin':100, 'ymin':500, 'xmax':1000, 'ymax':1800}
+    ################
+    # Configuration for frame size of the camera
+    ################
