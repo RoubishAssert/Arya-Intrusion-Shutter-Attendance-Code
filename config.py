@@ -5,8 +5,8 @@ DATABASE = 'arya_db'
 PORT = 3306
 
 # AWS S3 Bucket
-ACCESS_KEY = 'AKIAVUIZU62P73H7EXQB'
-SECRET_KEY = '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'
+ACCESS_KEY = 'AKIAVUIZU62P3XQD4PXS'
+SECRET_KEY = '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'
 BUCKET_NAME = 'at-arya-bucket'
 
 # detection
