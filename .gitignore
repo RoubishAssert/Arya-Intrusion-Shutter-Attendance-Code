@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# files to ignore
+*.txt
+*.cfg
+*.csv
+*.yml
+Inrusion_Vehicle_nvdsinfer_custom_impl_Yolo
+shutter_nvdsinfer_custom_impl_Yolo
