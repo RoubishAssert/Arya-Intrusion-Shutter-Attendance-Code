@@ -103,14 +103,14 @@ def insert_data_vehicle(frame_date, camera_id, frame_time, image_url, type_of_ve
     # # push log data
     params = (frame_date, frame_time, 'vehicle detected', 'action', camera_id, last_id)
     print(params)
-    event_id = query_all_data(cursor, query_push_log, params)
+    veh_event_id = query_all_data(cursor, query_push_log, params)
     mydb.commit()
 
     if mydb.is_connected():
         cursor.close()
         mydb.close()
 
-    return event_id
+    return veh_event_id
 
 
 
@@ -216,9 +216,9 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
                         frame_name = folder_name + "frame_{}_{}_{}.jpg".format(frame_number, frame_date, frame_time)
                         image_url = upload_to_aws(img_path, BUCKET_NAME, frame_name)
                         if obj_meta.obj_label == "truck":
-                            insert_data_vehicle(frame_date, camera_id, frame_time, image_url, "Truck")
+                            event_id = insert_data_vehicle(frame_date, camera_id, frame_time, image_url, "TRUCK")
                         elif obj_meta.obj_label == "car":
-                            insert_data_vehicle(frame_date, camera_id, frame_time, image_url, "Car")
+                            event_id = insert_data_vehicle(frame_date, camera_id, frame_time, image_url, "CAR")
                         else:
                             continue
                     else:
