@@ -173,7 +173,7 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
             frame_meta = pyds.NvDsFrameMeta.cast(l_frame.data)
         except StopIteration:
             break
-
+        fps_streams["stream{0}".format(frame_meta.pad_index)].get_fps()
         source_num = frame_meta.pad_index
         meta = streams_dict[camera_id_dict[source_num]]
         #print("meta: ", source_num)
@@ -189,6 +189,7 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
             PGIE_CLASS_ID_OPEN: 0,
         }
         while l_obj is not None:
+            
             #camera_id = camera_id_dict[source_num]
             #print(camera_id)
             try:
