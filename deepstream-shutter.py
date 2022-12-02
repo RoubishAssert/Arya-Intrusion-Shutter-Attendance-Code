@@ -129,8 +129,9 @@ def push_data_to_log_and_shutter(cursor, date_now, time_now, image_url,event):
     mydb.commit()
     last_id = query_all_data(cursor, query_last_shutter_id)
     params = (date_now, time_now, event, 'action', camera_id, last_id)
-    _ = query_all_data(cursor, query_push_log, params)
+    shutter_event_id = query_all_data(cursor, query_push_log, params)
     mydb.commit()
+    return shutter_event_id
 
 def check_location(roi, detections):
     if int(detections[1]) in range(roi['xmin'] , roi['xmax'] ) and int(detections[3]) in range(roi['xmin'] ,roi['xmax'] ):
@@ -230,8 +231,8 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
                     cv2.imwrite(img_path, frame_copy, [int(cv2.IMWRITE_JPEG_QUALITY), 10])
                     frame_name = folder_name + "frame_{}_{}_{}.jpg".format(frame_number, date_now, time_now)
                     image_url = upload_to_aws(img_path, BUCKET_NAME, frame_name)
-                    push_data_to_log_and_shutter(cursor, date_now, time_now,image_url,event = meta["event"] )
-
+                    event_id = push_data_to_log_and_shutter(cursor, date_now, time_now,image_url,event = meta["event"] )
+                    
                     streamNo = source_num
                     prev_status = status[str(source_num)]
                     cur_status = "close"
@@ -252,7 +253,7 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
                     cmr_id = camera_id_dict[source_num]
                     n_frame = pyds.get_nvds_buf_surface(hash(gst_buffer), frame_meta.batch_id)
                     #n_frame = draw_bounding_boxes(n_frame, obj_meta, obj_meta.confidence)
-                    # convert python array into numpy array format in the copy mode.
+                    # convert python array into numpy array format in th, where ee copy mode.
                     frame_copy = np.array(n_frame, copy=True, order='C')
                     # convert the array into cv2 default color format
                     frame_copy = cv2.cvtColor(frame_copy, cv2.COLOR_RGBA2BGRA)
@@ -261,7 +262,7 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
                     cv2.imwrite(img_path, frame_copy, [int(cv2.IMWRITE_JPEG_QUALITY), 10])
                     frame_name = folder_name + "frame_{}_{}_{}.jpg".format(frame_number, date_now, time_now)
                     image_url = upload_to_aws(img_path, BUCKET_NAME, frame_name)
-                    push_data_to_log_and_shutter(cursor, date_now, time_now , image_url,event = meta["event"])
+                    event_id = push_data_to_log_and_shutter(cursor, date_now, time_now , image_url,event = meta["event"])
 
                     streamNo = source_num
                     prev_status = status[str(source_num)]
