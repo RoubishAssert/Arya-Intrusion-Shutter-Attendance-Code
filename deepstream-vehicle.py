@@ -103,14 +103,14 @@ def insert_data_vehicle(frame_date, camera_id, frame_time, image_url, type_of_ve
     # # push log data
     params = (frame_date, frame_time, 'vehicle detected', 'action', camera_id, last_id)
     print(params)
-    _ = query_all_data(cursor, query_push_log, params)
+    event_id = query_all_data(cursor, query_push_log, params)
     mydb.commit()
 
     if mydb.is_connected():
         cursor.close()
         mydb.close()
 
-    return
+    return event_id
 
 
 
