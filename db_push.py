@@ -101,13 +101,13 @@ rows = cur.fetchall()
 
 for row in rows:
     print(row)
-    data = get_frame_name(row[5], row[1], row[3])
+    data = get_frame_name(row[5], row[1], row[3], row[8])
     print(data)
     try:
         image_url = upload_to_aws(row[5], BUCKET_NAME, data)
         print(image_url)
         ## database push
-        insert_data_vehicle(row[1], row[2], row[3], image_url)
+        insert_data_vehicle(row[1], row[2], row[3], image_url, row[8])
         print("data uploaded successfully")
         ## delete from  local db (delete from stats_vehicle where id = row[0])
         conn_create = sqlite3.connect(db_name)
