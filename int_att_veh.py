@@ -227,7 +227,7 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
     global current_counter_value
     # Switch off condition
     now = dt.datetime.now()
-    attend_hour = [15, 16, 17, 18, 19]
+    attend_hour = [20, 23, 2, 5, 8]
     len_hour = len(attend_hour)
 
     index_hour = None
