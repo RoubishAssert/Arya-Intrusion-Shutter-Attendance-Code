@@ -101,7 +101,7 @@ rows = cur.fetchall()
 
 for row in rows:
     print(row)
-    data = get_frame_name(row[5], row[1], row[3], row[8])
+    data = get_frame_name(row[5], row[1], row[3])
     print(data)
     try:
         image_url = upload_to_aws(row[5], BUCKET_NAME, data)
