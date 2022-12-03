@@ -100,6 +100,16 @@ event = ''
 global cmr_id
 cmr_id = ''
 
+from datetime import time
+import requests
+import json
+warehouse_name = 'Sandeep Warehouse'
+warehouse_id = "1"
+start_1 = time(18, 0, 0)
+end_1 = time(23, 59, 0)
+start_2 = time(0, 1, 0)
+end_2 = time(9, 0, 0)
+
 from utils import query_push_log, query_all_data, get_mydb_cursor, commit_and_close, SHUTTER_OPEN, \
     SHUTTER_CLOSE
 from datetime import datetime
@@ -108,6 +118,23 @@ mydb, cursor = get_mydb_cursor()
 #global camera_id
 #camera_id = '45_4'
 query_last_shutter_id = 'SELECT id FROM stats_shutter ORDER BY id DESC LIMIT 1'
+
+def get_device_token(warehouseId):
+    device_token_url = "https://app-assertai.com:5000/api/mobile/getDeviceTokens?wareHouseId={}".format(warehouseId)
+    f = requests.get(device_token_url)
+    data = json.loads(f.text)
+    return data['data']
+
+
+url = "https://fcm.googleapis.com/fcm/send"
+serverToken = "AAAA4SK1m4o:APA91bGj-vh8Xh-wr4MS0z2JG4hERZjLAsSpQysRqfX4xxPCk58SSHJ3QMt02In-W3NBxEYVPSho8S5OtXJKggXwbTY3muPOgoEvMPArqt6AA-Pc-JZKCFBQF800WzD_sGl0BtZ9Ib9x"
+
+headers = {
+    'Authorization': 'key=' + serverToken,
+    'Content-Type': 'application/json'
+}
+
+list_token = get_device_token(warehouse_id)
 
 def push_data_to_log_and_shutter(cursor, date_now, time_now, image_url,event):
     global cmr_id
@@ -232,6 +259,33 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
                     frame_name = folder_name + "frame_{}_{}_{}.jpg".format(frame_number, date_now, time_now)
                     image_url = upload_to_aws(img_path, BUCKET_NAME, frame_name)
                     event_id = push_data_to_log_and_shutter(cursor, date_now, time_now,image_url,event = meta["event"] )
+                    push_current_time = datetime.now().time()
+                    if (start_1 <= push_current_time and push_current_time <= end_1) or (start_2 <= push_current_time and push_current_time <= end_2):
+                        try:
+                            for i in list_token:
+                                payload = json.dumps({
+                                    "to": i,
+                                    "notification": {
+                                        "body": warehouse_name,
+                                        "title": meta["event"],
+                                        "subtitle": f"Date: {date_now} , Time: {time_now}"
+                                    },
+                                    "data": {
+                                        "site_name": warehouse_name,
+                                        "Event id": event_id,
+                                        "camera_name": cmr_id,
+                                        "event_time": time_now,
+                                        "event_date": date_now,
+                                        "event_tag": meta["event"],
+                                        "image": image_url
+
+                                    }
+                                })
+
+                                response = requests.request("POST", url, headers=headers, data=payload)
+                                print(response.text)
+                        except Exception as e:
+                            print(e)
                     
                     streamNo = source_num
                     prev_status = status[str(source_num)]
@@ -263,7 +317,34 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
                     frame_name = folder_name + "frame_{}_{}_{}.jpg".format(frame_number, date_now, time_now)
                     image_url = upload_to_aws(img_path, BUCKET_NAME, frame_name)
                     event_id = push_data_to_log_and_shutter(cursor, date_now, time_now , image_url,event = meta["event"])
+                    push_current_time = datetime.now().time()
+                    if (start_1 <= push_current_time and push_current_time <= end_1) or (start_2 <= push_current_time and push_current_time <= end_2):
+                        try:
+                            for i in list_token:
+                                payload = json.dumps({
+                                    "to": i,
+                                    "notification": {
+                                        "body": warehouse_name,
+                                        "title": meta["event"],
+                                        "subtitle": f"Date: {date_now} , Time: {time_now}"
+                                    },
+                                    "data": {
+                                        "site_name": warehouse_name,
+                                        "Event id": event_id,
+                                        "camera_name": cmr_id,
+                                        "event_time": time_now,
+                                        "event_date": date_now,
+                                        "event_tag": meta["event"],
+                                        "image": image_url
 
+                                    }
+                                })
+
+                                response = requests.request("POST", url, headers=headers, data=payload)
+                                print(response.text)
+                        except Exception as e:
+                            print(e)
+                            
                     streamNo = source_num
                     prev_status = status[str(source_num)]
                     cur_status = "open"
