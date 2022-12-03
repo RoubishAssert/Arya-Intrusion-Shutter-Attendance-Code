@@ -19,14 +19,14 @@ def insert_data_vehicle(frame_date, camera_id, frame_time, image_url, type_of_ve
     # # push log data
     params = (frame_date, frame_time, 'vehicle detected', 'action', camera_id, last_id)
     print(params)
-    _ = query_all_data(cursor, query_push_log, params)
+    veh_event_id = query_all_data(cursor, query_push_log, params)
     mydb.commit()
 
     if mydb.is_connected():
         cursor.close()
         mydb.close()
 
-    return
+    return veh_event_id
 
 
 def insert_data_attend(frame_date, frame_time, camera_id, image_url, attendance_count):
@@ -41,14 +41,14 @@ def insert_data_attend(frame_date, frame_time, camera_id, image_url, attendance_
     # # push log data
     params = (frame_date, frame_time, 'attendance detected', 'action', camera_id, last_id)
     print(params)
-    _ = query_all_data(cursor, query_push_log, params)
+    attend_event_id = query_all_data(cursor, query_push_log, params)
     mydb.commit()
 
     if mydb.is_connected():
         cursor.close()
         mydb.close()
 
-    return
+    return attend_event_id
 
 
 def insert_data_intrusion(frame_date, frame_time, camera_id, image_url):
@@ -65,14 +65,14 @@ def insert_data_intrusion(frame_date, frame_time, camera_id, image_url):
     # # push log data
     params = (frame_date, frame_time, 'intrusion detected', 'action', camera_id, last_id)
     print(params)
-    _ = query_all_data(cursor, query_push_log, params)
+    intrusion_event_id = query_all_data(cursor, query_push_log, params)
     mydb.commit()
 
     if mydb.is_connected():
         cursor.close()
         mydb.close()
 
-    return
+    return intrusion_event_id
 
 
 def get_frame_name(img_path, img_date, img_time):
@@ -107,7 +107,7 @@ for row in rows:
         image_url = upload_to_aws(row[5], BUCKET_NAME, data)
         print(image_url)
         ## database push
-        insert_data_vehicle(row[1], row[2], row[3], image_url, row[8])
+        event_id = insert_data_vehicle(row[1], row[2], row[3], image_url, row[8])
         print("data uploaded successfully")
         ## delete from  local db (delete from stats_vehicle where id = row[0])
         conn_create = sqlite3.connect(db_name)
@@ -140,7 +140,7 @@ for row in rows:
         else:
             image_url = row[4]
         # database push
-        insert_data_attend(row[1], row[2], row[3], image_url, row[6])
+        event_id = insert_data_attend(row[1], row[2], row[3], image_url, row[6])
         print("data uploaded successfully")
         # delete from  local db (delete from stats_vehicle where id = row[0])
         conn_create = sqlite3.connect(db_name)
@@ -171,7 +171,7 @@ for row in rows:
         image_url = upload_to_aws(row[4], BUCKET_NAME, data)
         print(image_url)
         # database push
-        insert_data_intrusion(row[1], row[2], row[3], image_url)
+        event_id = insert_data_intrusion(row[1], row[2], row[3], image_url)
         print("data uploaded successfully")
         # delete from  local db (delete from stats_vehicle where id = row[0])
         conn_create = sqlite3.connect(db_name)
