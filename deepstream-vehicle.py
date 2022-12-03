@@ -63,10 +63,16 @@ streams_dict = {}
 
 blank_image = "https://at-arya-bucket.s3.ap-south-1.amazonaws.com/1frame_99_2022-07-05_08_20_33.png"
 
-# wh_name = 'MangalkumarIND_A-56-57'
-# aws_arn = 'arn:aws:sns:ap-south-1:387137730207:intrusion-arya'
 
-
+from datetime import time
+import requests
+import json
+warehouse_name = 'Sandeep Warehouse'
+warehouse_id = "1"
+start_1 = time(18, 0, 0)
+end_1 = time(23, 59, 0)
+start_2 = time(0, 1, 0)
+end_2 = time(9, 0, 0)
 
 # Function for message sent when vehicle detected.
 # Parameter : 3
@@ -91,6 +97,22 @@ blank_image = "https://at-arya-bucket.s3.ap-south-1.amazonaws.com/1frame_99_2022
 #     response = topic.publish(Message=str(json.dumps(message)), Subject="Vehicle Alert", MessageStructure='json')
 #     return response
 
+def get_device_token(warehouseId):
+    device_token_url = "https://app-assertai.com:5000/api/mobile/getDeviceTokens?wareHouseId={}".format(warehouseId)
+    f = requests.get(device_token_url)
+    data = json.loads(f.text)
+    return data['data']
+
+
+url = "https://fcm.googleapis.com/fcm/send"
+serverToken = "AAAA4SK1m4o:APA91bGj-vh8Xh-wr4MS0z2JG4hERZjLAsSpQysRqfX4xxPCk58SSHJ3QMt02In-W3NBxEYVPSho8S5OtXJKggXwbTY3muPOgoEvMPArqt6AA-Pc-JZKCFBQF800WzD_sGl0BtZ9Ib9x"
+
+headers = {
+    'Authorization': 'key=' + serverToken,
+    'Content-Type': 'application/json'
+}
+
+list_token = get_device_token(warehouse_id)
 
 def insert_data_vehicle(frame_date, camera_id, frame_time, image_url, type_of_vehicle):
     mydb, cursor = get_mydb_cursor()
@@ -217,8 +239,62 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
                         image_url = upload_to_aws(img_path, BUCKET_NAME, frame_name)
                         if obj_meta.obj_label == "truck":
                             event_id = insert_data_vehicle(frame_date, camera_id, frame_time, image_url, "TRUCK")
+                            push_current_time = datetime.now().time()
+                            if (start_1 <= push_current_time and push_current_time <= end_1) or (start_2 <= push_current_time and push_current_time <= end_2):
+                                try:
+                                    for i in list_token:
+                                        payload = json.dumps({
+                                            "to": i,
+                                            "notification": {
+                                                "body": warehouse_name,
+                                                "title": "Truck Detected",
+                                                "subtitle": f"Date: {frame_date} , Time: {frame_time}"
+                                            },
+                                            "data": {
+                                                "site_name": warehouse_name,
+                                                "Event id": event_id,
+                                                "camera_name": camera_id,
+                                                "event_time": frame_time,
+                                                "event_date": frame_date,
+                                                "event_tag": "Vehicle Detected",
+                                                "image": image_url
+
+                                            }
+                                        })
+
+                                        response = requests.request("POST", url, headers=headers, data=payload)
+                                        print(response.text)
+                                except Exception as e:
+                                    print(e)
                         elif obj_meta.obj_label == "car":
                             event_id = insert_data_vehicle(frame_date, camera_id, frame_time, image_url, "CAR")
+                            push_current_time = datetime.now().time()
+                            if (start_1 <= push_current_time and push_current_time <= end_1) or (start_2 <= push_current_time and push_current_time <= end_2):
+                                try:
+                                    for i in list_token:
+                                        payload = json.dumps({
+                                            "to": i,
+                                            "notification": {
+                                                "body": warehouse_name,
+                                                "title": "Car Detected",
+                                                "subtitle": f"Date: {frame_date} , Time: {frame_time}"
+                                            },
+                                            "data": {
+                                                "site_name": warehouse_name,
+                                                "Event id": event_id,
+                                                "camera_name": camera_id,
+                                                "event_time": frame_time,
+                                                "event_date": frame_date,
+                                                "event_tag": "Vehicle Detected",
+                                                "image": image_url
+
+                                            }
+                                        })
+
+                                        response = requests.request("POST", url, headers=headers, data=payload)
+                                        print(response.text)
+                                except Exception as e:
+                                    print(e)
                         else:
                             continue
                     else:
