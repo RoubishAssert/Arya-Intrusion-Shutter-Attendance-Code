@@ -7,6 +7,34 @@ from config import BUCKET_NAME, SECONDS_GAP_BEFORE_INTRUSION, FPS_INTRUSION, SEC
 
 db_name = "arya_db.db"
 
+from datetime import time
+import requests
+import json
+#import time
+warehouse_name = 'Sandeep Warehouse'
+# aws_arn = 'arn:aws:sns:ap-south-1:387137730207:intrusion-arya'
+warehouse_id = "1"
+start_1 = time(18, 0, 0)
+end_1 = time(23, 59, 0)
+start_2 = time(0, 1, 0)
+end_2 = time(9, 0, 0)
+
+def get_device_token(warehouseId):
+    device_token_url = "https://app-assertai.com:5000/api/mobile/getDeviceTokens?wareHouseId={}".format(warehouseId)
+    f = requests.get(device_token_url)
+    data = json.loads(f.text)
+    return data['data']
+
+
+url = "https://fcm.googleapis.com/fcm/send"
+serverToken = "AAAA4SK1m4o:APA91bGj-vh8Xh-wr4MS0z2JG4hERZjLAsSpQysRqfX4xxPCk58SSHJ3QMt02In-W3NBxEYVPSho8S5OtXJKggXwbTY3muPOgoEvMPArqt6AA-Pc-JZKCFBQF800WzD_sGl0BtZ9Ib9x"
+
+headers = {
+    'Authorization': 'key=' + serverToken,
+    'Content-Type': 'application/json'
+}
+
+list_token = get_device_token(warehouse_id)
 
 def insert_data_vehicle(frame_date, camera_id, frame_time, image_url, type_of_vehicle):
     mydb, cursor = get_mydb_cursor()
@@ -108,6 +136,33 @@ for row in rows:
         print(image_url)
         ## database push
         event_id = insert_data_vehicle(row[1], row[2], row[3], image_url, row[8])
+        push_current_time = datetime.now().time()
+        if (start_1 <= push_current_time and push_current_time <= end_1) or (start_2 <= push_current_time and push_current_time <= end_2):
+            try:
+                for i in list_token:
+                    payload = json.dumps({
+                        "to": i,
+                        "notification": {
+                            "body": warehouse_name,
+                            "title": "Vehicle Detected",
+                            "subtitle": f"Date: {row[1]} , Time: {row[3]}"
+                        },
+                        "data": {
+                            "site_name": warehouse_name,
+                            "event_id": event_id,
+                            "camera_name": row[2],
+                            "event_time": row[3],
+                            "event_date": row[1],
+                            "event_tag": "Vehicle Detected",
+                            "image": image_url
+
+                        }
+                    })
+
+                    response = requests.request("POST", url, headers=headers, data=payload)
+                    print(response.text)
+            except Exception as e:
+                print(e)
         print("data uploaded successfully")
         ## delete from  local db (delete from stats_vehicle where id = row[0])
         conn_create = sqlite3.connect(db_name)
@@ -141,6 +196,33 @@ for row in rows:
             image_url = row[4]
         # database push
         event_id = insert_data_attend(row[1], row[2], row[3], image_url, row[6])
+        push_current_time = datetime.now().time()
+        if (start_1 <= push_current_time and push_current_time <= end_1) or (start_2 <= push_current_time and push_current_time <= end_2):
+            try:
+                for i in list_token:
+                    payload = json.dumps({
+                        "to": i,
+                        "notification": {
+                            "body": warehouse_name,
+                            "title": "Attendance Detected",
+                            "subtitle": f"Date: {row[1]} , Time: {row[2]}"
+                        },
+                        "data": {
+                            "site_name": warehouse_name,
+                            "event_id": event_id,
+                            "camera_name": row[3],
+                            "event_time": row[2],
+                            "event_date": row[1],
+                            "event_tag": "Attendance Detected",
+                            "image": image_url
+
+                        }
+                    })
+
+                    response = requests.request("POST", url, headers=headers, data=payload)
+                    print(response.text)
+            except Exception as e:
+                print(e)
         print("data uploaded successfully")
         # delete from  local db (delete from stats_vehicle where id = row[0])
         conn_create = sqlite3.connect(db_name)
@@ -172,6 +254,35 @@ for row in rows:
         print(image_url)
         # database push
         event_id = insert_data_intrusion(row[1], row[2], row[3], image_url)
+        push_current_time = datetime.now().time()
+        if (start_1 <= push_current_time and push_current_time <= end_1) or (start_2 <= push_current_time and push_current_time <= end_2):
+            try:
+                for i in list_token:
+                    payload = json.dumps({
+                        "to": i,
+                        "notification": {
+                            "body": warehouse_name,
+                            "title": "Intrusion Detected",
+                            "subtitle": f"Date: {row[1]} , Time: {row[2]}"
+                            # "Camera" : camera_id,
+                            # "Image" : f"Image url is {image_url}"
+                        },
+                        "data": {
+                            "site_name": warehouse_name,
+                            "event_id": "event_id",
+                            "camera_name": row[3],
+                            "event_time": row[2],
+                            "event_date": row[1],
+                            "event_tag": "Intrusion Detected",
+                            "image": image_url
+
+                        }
+                    })
+
+                    response = requests.request("POST", url, headers=headers, data=payload)
+                    print(response.text)
+            except Exception as e:
+                print(e)
         print("data uploaded successfully")
         # delete from  local db (delete from stats_vehicle where id = row[0])
         conn_create = sqlite3.connect(db_name)
