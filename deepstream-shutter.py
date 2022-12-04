@@ -272,7 +272,7 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
                                     },
                                     "data": {
                                         "site_name": warehouse_name,
-                                        "Event id": event_id,
+                                        "event_id": event_id,
                                         "camera_name": cmr_id,
                                         "event_time": time_now,
                                         "event_date": date_now,
@@ -330,7 +330,7 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
                                     },
                                     "data": {
                                         "site_name": warehouse_name,
-                                        "Event id": event_id,
+                                        "event_id": event_id,
                                         "camera_name": cmr_id,
                                         "event_time": time_now,
                                         "event_date": date_now,
