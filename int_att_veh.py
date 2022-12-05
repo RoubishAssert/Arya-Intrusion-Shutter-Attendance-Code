@@ -923,12 +923,12 @@ def main(args, roi , arg_list, MIN_CONFIDENCE , MAX_CONFIDENCE):
 #     filter1.link(tiler)
 #     tiler.link(nvvidconv)
 #     nvvidconv.link(nvosd)
-#     if is_aarch64():
-#        nvosd.link(transform)
-#        transform.link(sink)
-#     else:
-#        nvosd.link(sink)
-    nvosd.link(sink)
+    if is_aarch64():
+       nvosd.link(transform)
+       transform.link(sink)
+    else:
+       nvosd.link(sink)
+#     nvosd.link(sink)
 
     # create an event loop and feed gstreamer bus mesages to it
     loop = GObject.MainLoop()
