@@ -268,14 +268,14 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
                                     "notification": {
                                         "body": warehouse_name,
                                         "title": meta["event"],
-                                        "subtitle": f"Date: {date_now} , Time: {time_now}"
+                                        "subtitle": f"Date: {str(date_now)} , Time: {str(time_now)}"
                                     },
                                     "data": {
                                         "site_name": warehouse_name,
                                         "event_id": event_id,
                                         "camera_name": cmr_id,
-                                        "event_time": time_now,
-                                        "event_date": date_now,
+                                        "event_time": str(time_now),
+                                        "event_date": str(date_now),
                                         "event_tag": meta["event"],
                                         "image": image_url
 
@@ -326,14 +326,14 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
                                     "notification": {
                                         "body": warehouse_name,
                                         "title": meta["event"],
-                                        "subtitle": f"Date: {date_now} , Time: {time_now}"
+                                        "subtitle": f"Date: {str(date_now)} , Time: {str(time_now)}"
                                     },
                                     "data": {
                                         "site_name": warehouse_name,
                                         "event_id": event_id,
                                         "camera_name": cmr_id,
-                                        "event_time": time_now,
-                                        "event_date": date_now,
+                                        "event_time": str(time_now),
+                                        "event_date": str(date_now),
                                         "event_tag": meta["event"],
                                         "image": image_url
 
