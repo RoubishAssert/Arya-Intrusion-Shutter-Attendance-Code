@@ -164,7 +164,7 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
     l_frame = batch_meta.frame_meta_list
     
     while l_frame is not None:
-        print("Inside l_frame")
+        #print("Inside l_frame")
         try:
             # Note that l_frame.data needs a cast to pyds.NvDsFrameMeta
             # The casting is done by pyds.NvDsFrameMeta.cast()
@@ -174,6 +174,7 @@ def tiler_sink_pad_buffer_probe(pad, info, u_data):
             frame_meta = pyds.NvDsFrameMeta.cast(l_frame.data)
         except StopIteration:
             break
+            
         fps_streams["stream{0}".format(frame_meta.pad_index)].get_fps()
         source_num = frame_meta.pad_index
         meta = streams_dict[camera_id_dict[source_num]]
